@@ -132,7 +132,7 @@
         
         <div class="abstract">
             <h4>Abstract</h4>
-            <p>In unsupervised machine learning, clustering is a primary method for finding the structure and patterns within unlabelled data. One method of clustering that is very well-known is K-Means. The reason for K-Means's popularity is because of its simplicity, speed, and interpretability. Unfortunately, there are two areas in which K-Means does not perform well: how the initial centroids are picked and what value should be chosen for K. When bad decisions are made in these areas, K-Means will yield unsatisfactory results or solutions.</p>
+            <p>In unsupervised machine learning, clustering is a primary method for finding the structure and patterns within unlabelled data.K-Means clustering methods are widely used due to being simple to implement, having fast execution time, and producing easily interpretable outputs/results. However, K-Means has two major downsides: the way initial centroids are selected and the way K is chosen. If the initial centroid selections or K values are not appropriate, this can lead to poor quality/solutions produced by K-Means.</p>
             
             <p>This report will provide a complete tutorial of how K-Means works and then examine the initialisation and K values that impact the way K-Means operates. We will use Python to demonstrate the centroids' movement and demonstrate the difference between random initialisation and K-Means++, and to show the results of applying both the Elbow method and Silhouette score to determine the appropriate value for K. Additionally, we will cover a case study of K-Means performing poorly with a non-spherical dataset and briefly explain when to use K-Means and when not to use it. The report will combine theoretical explanations of clustering algorithms with practical demonstrations of how clustering is achieved and searching for clustering solutions will demonstrate many of the generic methods and models used in machine learning, including distance metrics, iterative optimisation, and clustering by centroids.</p>
         </div>
@@ -142,13 +142,15 @@
         
         <p>K-Means clustering is one of the first algorithms that are often used for clustering. K-Means partitions data into K clusters, where K is the user-supplied 'number of clusters,' by assigning each point of data (observation) to the cluster with the nearest point/centroid. The algorithm is simple to conceptualise and is able to scale well to larger datasets than other clustering algorithms, thus allowing for ease of use when visualising the results when the data is in a low-dimensional space.</p>
         
-        <p>However, K-Means does not specify the number of clusters that exist. Instead, K must be defined by the user prior to running the algorithm. Additionally, the algorithm may converge on different clusterings, depending on where the initial centroids are located.</p>
+        <p>The Number of Clusters is Not Specified. To execute the K-Means algorithm, the user must designate a number of clusters, or K. The final grouping of data (known as the final cluster) may depend on the position of the initial centroid(s).
+
+</p>
         
         <p>This paper will:</p>
         <ul>
-            <li>Provide a step-by-step explanation of the K-Means algorithm.</li>
-            <li>Illustrate how the location of the centroids impacts the clustering result.</li>
-            <li>Show how to determine the number of clusters, K, using both the elbow method and the Silhouette score.</li>
+            <li>To offer a systematic overview of the K-means clustering algorithm.</li>
+            <li>To demonstrate how the positions of the centroids affect cluster behaviour.</li>
+            <li>To provide suggestions for determining the optimal number of clusters K using both the elbow method and the Silhouette method.</li>
             <li>Present a failure case where K-Means will not work for the structure of the data.</li>
             <li>When possible, link these concepts to existing methodologies in generic machine learning such as distance-based learning and iterative optimising.</li>
         </ul>
@@ -193,9 +195,9 @@
         </div>
         
         <h3>Convergence</h3>
-        <p>Continue the process of assigning data points to the cluster centroids and updating the position of the centroids until the centroids stop moving significantly or until the maximum number of iterations has been reached.</p>
+        <p>As long as the cluster centroids continue to change substantially from iteration to iteration, the algorithm will repeat the process of assigning data points to the cluster centroids and then updating the location of the centroids. When there is no longer a significant change in the cluster centroids' locations or after a specified maximum number of iterations has been reached, K-Means terminates.</p>
         
-        <p>K-Means is an iterative optimization algorithm that minimizes the objective function J during each iteration. However, there is no guarantee that the result from K-Means will achieve the global minimum; therefore, the result is not necessarily a global minimum, but only a local minimum. This reinforces why K-Means requires proper initialization.</p>
+        <p>At each iteration of K-Means, an attempt is made to minimize the K-Means objective function, J; however, K-Means is an optimization technique using a series of iterative steps to minimize J. Since no assurance exists that the achieved result of K-Means will represent a globally optimal value (the least value of J), the K-Means result is not considered a global minimum, but a locally optimal value. Therefore, the proper initialization of the K-Means clustering process is necessary.</p>
         
         <div class="figure-placeholder">
             <img src="images/fig1.png" alt="Picture">
@@ -208,7 +210,7 @@
         <h2>4. Initialization Methods: Random Initialisation or K-Means++</h2>
         
         <h3>4.1 Random Initialization</h3>
-        <p>Randomly selecting K points as initial centroid positions is the simplest way to initialize K-Means, as this is straightforward to implement. Unfortunately, if the initial centroid positions selected were not chosen appropriately (i.e., they are too close together), the result may end up being an unevenly spaced cluster. Because K-Means performs a greedy approach, if it generates a cluster containing two closely located centroids and an under-populated region of the dataset, K-Means could become stuck in an undesirable state.</p>
+        <p>Randomly selecting K points as initial centroid positions is the simplest way to initialize K-Means, as this is straightforward to implement. If centroids are chosen incorrectly, the outcome of k-means clustering may be to create uneven clusters. The clustering process is greedy, meaning that as clusters are formed, any underrepresented areas will become difficult to cluster, and may become trapped in local minima.</p>
         
         <div class="figure-placeholder">
             <img src="images/fig2.png" alt="Picture">
@@ -236,7 +238,7 @@
             <figcaption>K-Means Clustering with K-Means++ Initialisation</figcaption>
         </div>
         
-        <p>K-Means++ uses better initial Centroid positioning to result in a cleaner and more consistent clustering solution. With K-Means++ the Centroids begin in decent locations, which allows the Algorithm to quickly find a "good" solution. Most libraries, including scikit-learn, use K-Means++ as the default method for selecting initial Centroid placements.</p>
+        <p>K-Means++ uses better initial Centroid positioning to result in a cleaner and more consistent clustering solution. K-Means++ starts the centroids from decent initial positions, enabling the algorithm to reach a “good” solution quickly. Most libraries, such as those in scikit-learn, use K-Means++ by default as the way to choose the first centroid positions.</p>
         
         <p>From a methodological perspective, Initialisation is a very effective optimisation technique. It is a generalisation technique for producing better quality Local Minima for Algorithms.</p>
 
@@ -253,7 +255,7 @@
              <figcaption>Centroid Movement Across Iterations</figcaption>
         </div>
         
-        <p>Figure 4 is designed to help illustrate the change in centroid position through time in the context of approximately eight iterations of running K-Means. By examining Figure 4 we can clearly see that the earliest positions of centroids are often much further away from their "true" centre than they are at the conclusion of the iterations. However, as we complete additional iterations of assigning points to clusters and updating the centroid positions, we can see that this movement naturally causes centroids to migrate toward the denser clusters of points. This is especially evident when looking at the locations of centroids in the early portions of the K-Means iterative process. The first few iterations contain large movements followed by smaller movements as the K-Means algorithm closes in on a solution. This demonstrates a common trend in optimization, which is to make large adjustments first, then fine-tune to get closer to the answer.</p>
+        <p>Figure 4 is designed to help illustrate the change in centroid position through time in the context of approximately eight iterations of running K-Means. By examining Figure 4 we can clearly see that the earliest positions of centroids are often much further away from their "true" centre than they are at the conclusion of the iterations. However, as we complete additional iterations of assigning points to clusters and updating the centroid positions, we can see that this movement naturally causes centroids to migrate toward the denser clusters of points. This is especially evident when looking at the locations of centroids in the early portions of the K-Means iterative process. When beginning an algorithm, K-Means begins with many large position movements followed by more precise adjustments as it gets closer to the final position or solution. This is very much how many of the algorithms operate or optimize their ability.</p>
 
         <h2>6. The "K" Value Selection in K-Means Clustering</h2>
         <p>The number of clusters (K) must be specified by the user. The placement of K in this case is a problem of model selection. The two most commonly used methods of selecting K are the elbow method and silhouette analysis.</p>
@@ -271,13 +273,13 @@
         <p>In figure 5, inertia is initially steeply decreasing and then flattens out over time. The point on the plot where it "bends" or "elbows" is a reasonable selection for K, since it represents the best compromise between the complexity of the model and the quality of the fit.</p>
         
         <h3>6.2 Silhouette Analysis</h3>
-        <p>The silhouette score represents how well separated a cluster is from other clusters. For each data point (i = 1 to n), <i>a</i> represents the average distance of point i to other points in the same cluster; <i>b</i> gives the lower average distance of point i to other clusters. The silhouette score (<i>s</i>) is given by the formula:</p>
+        <p>The silhouette score also describes how distinct one cluster is from other clusters using silhouette scores to measure the degree to which points in one cluster resemble other points within that same cluster. Each individual point in a dataset has an average distance <i>a</i> to all the other points within its own cluster and has an average distance <i>b</i> to the closest cluster. The silhouette score of a data point is determined using the formula below:</p>
         
         <div class="equation">
             s = (b − a) / max(a, b)
         </div>
         
-        <p>The silhouette score varies from -1 to +1, where higher scores indicate data points are closer to their own cluster than to any one of the other clusters, whereas lower and negative silhouette scores indicate that misclassification is probable.</p>
+        <p>Silhouette scores range from -1 to +1, with higher values indicating that a data point belongs more closely to its own cluster than to any of the surrounding clusters, while lower and/or negative scores indicate that that point may be misclassified as being part of another cluster.</p>
 
         <div class="figure-placeholder">
             <img src="images/fig6.png" alt="Picture">
@@ -327,7 +329,7 @@
         <p>These techniques and models will be relevant throughout the field of Machine Learning and Data Analysis, not only with K-Means.</p>
 
         <h2>9. Conclusion</h2>
-        <p>K-Means Clustering is a very basic algorithm; it is simple and quick, but nonetheless interpretable. K-Means Clustering is often a good starting point to explore data and serves as a benchmark against which to compare other clustering methods. The way in which K-Means performs will largely depend upon the two decisions made by the user, including the way the centroids are initialized and what value is chosen for K.</p>
+        <p>K-Means Clustering, also known as K-means Clustering Algorithm, is one of the simplest and fastest clustering algorithms. It is also one of the most easily interpretable clustering algorithms. It can also help you assess, or evaluate, other clustering algorithms, and it can start your exploration of clustering data.The performance of K-Means Clustering will vary depending on the two user-defined parameters: How you initialize the centroids and what value you select for "K".</p>
         
         <p>In this report, we have:</p>
         <ul>
