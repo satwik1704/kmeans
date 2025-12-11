@@ -199,7 +199,7 @@
         
         <div class="figure-placeholder">
             <img src="images/fig1.png" alt="Picture">
-            <caption>synthetic 4-cluster dataset</caption><br>
+            <figcaption>synthetic dataset used for clustering</figcaption>
         </div>
 
         
@@ -212,7 +212,7 @@
         
         <div class="figure-placeholder">
             <img src="images/fig2.png" alt="Picture">
-            <caption>K-Means, initialized with random</caption><br>
+            <figcaption>K-Means clustering with random intialisation</figcaption>
         </div>
             
         
@@ -233,7 +233,7 @@
         
         <div class="figure-placeholder">
             <img src="images/fig3.png" alt="Picture">
-            <caption>K-Means++, initialized with random</caption><br>
+            <figcaption>K-Means Clustering with K-Means++ Initialisation</figcaption>
         </div>
         
         <p>K-Means++ uses better initial Centroid positioning to result in a cleaner and more consistent clustering solution. With K-Means++ the Centroids begin in decent locations, which allows the Algorithm to quickly find a "good" solution. Most libraries, including scikit-learn, use K-Means++ as the default method for selecting initial Centroid placements.</p>
@@ -250,7 +250,7 @@
 
         <div class="figure-placeholder">
             <img src="images/fig4.png" alt="Picture">
-            <caption>centroid positions across ~8 iterations</caption><br>
+             <figcaption>Centroid Movement Across Iterations</figcaption>
         </div>
         
         <p>Figure 4 is designed to help illustrate the change in centroid position through time in the context of approximately eight iterations of running K-Means. By examining Figure 4 we can clearly see that the earliest positions of centroids are often much further away from their "true" centre than they are at the conclusion of the iterations. However, as we complete additional iterations of assigning points to clusters and updating the centroid positions, we can see that this movement naturally causes centroids to migrate toward the denser clusters of points. This is especially evident when looking at the locations of centroids in the early portions of the K-Means iterative process. The first few iterations contain large movements followed by smaller movements as the K-Means algorithm closes in on a solution. This demonstrates a common trend in optimization, which is to make large adjustments first, then fine-tune to get closer to the answer.</p>
@@ -263,7 +263,8 @@
 
        <div class="figure-placeholder">
             <img src="images/fig5.png" alt="Picture">
-            <caption>inertia vs K plot</caption><br>
+            <figcaption>Elbow Method for Choosing K</figcaption>
+           
         </div>
         
         
@@ -280,7 +281,7 @@
 
         <div class="figure-placeholder">
             <img src="images/fig6.png" alt="Picture">
-            <caption> silhouette vs K plo</caption><br>
+             <figcaption>Silhouette Scores for Different Values of K</figcaption>
         </div>
         
         <p>Figure 6 shows that the maximum silhouette score occurs at the "optimal" K value that we will obtain by combining the elbow method and silhouette score analysis to obtain the optimum value for K.</p>
@@ -299,7 +300,7 @@
 
         <div class="figure-placeholder">
             <img src="images/fig7.png" alt="Picture">
-            <caption>K-Means Results on make_moons Data Set</caption><br>
+            <figcaption>K-Means Failure Case on Non-Spherical Data</figcaption
         </div>
         
         <p>As seen in Figure 7, K-Means is attempting to "cut" between the two moons using a straight line. Therefore, many points are found outside of their cluster, even though the two clusters are visually identifiable by a human observer. In this case, the distance from the central point, the centroid, is a poor criterion for determining cluster membership.</p>
