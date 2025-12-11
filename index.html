@@ -200,9 +200,10 @@
         <p>Randomly selecting K points as initial centroid positions is the simplest way to initialize K-Means, as this is straightforward to implement. Unfortunately, if the initial centroid positions selected were not chosen appropriately (i.e., they are too close together), the result may end up being an unevenly spaced cluster. Because K-Means performs a greedy approach, if it generates a cluster containing two closely located centroids and an under-populated region of the dataset, K-Means could become stuck in an undesirable state.</p>
         
         <div class="figure-placeholder">
-            <strong>Insert Figure 2 here</strong><br>
-            (Use the output from Cell 4: K-Means, initialized with random.)
+            <img src="images/fig2.png" alt="Picture">
+            <caption>K-Means, initialized with random</caption><br>
         </div>
+            
         
         <p>As shown in Figure 2, random initialisation produces clusters that do not align with the underlying data. This is illustrated by the K-Means centroids positioned slightly off centre and the incorrect clustering of certain points in the dataset into the wrong cluster.</p>
         
@@ -220,8 +221,8 @@
         <p>As a result of the Centroids being selected in this fashion, the Centroids are positioned far apart in space initially (well spread out).</p>
         
         <div class="figure-placeholder">
-            <strong>Insert Figure 3 here</strong><br>
-            (Generated via code snippet from cell 4 with K-Means++.)
+            <img src="images/fig3.png" alt="Picture">
+            <caption>K-Means++, initialized with random</caption><br>
         </div>
         
         <p>K-Means++ uses better initial Centroid positioning to result in a cleaner and more consistent clustering solution. With K-Means++ the Centroids begin in decent locations, which allows the Algorithm to quickly find a "good" solution. Most libraries, including scikit-learn, use K-Means++ as the default method for selecting initial Centroid placements.</p>
@@ -235,10 +236,10 @@
             <li>The position of each centroid at each iteration of the K-Means algorithm</li>
             <li>The movement of centroids over iterations</li>
         </ol>
-        
+
         <div class="figure-placeholder">
-            <strong>Insert Figure 4 here</strong><br>
-            (Use the plot from Cell 5: centroid positions across ~8 iterations.)
+            <img src="images/fig4.png" alt="Picture">
+            <caption>centroid positions across ~8 iterations</caption><br>
         </div>
         
         <p>Figure 4 is designed to help illustrate the change in centroid position through time in the context of approximately eight iterations of running K-Means. By examining Figure 4 we can clearly see that the earliest positions of centroids are often much further away from their "true" centre than they are at the conclusion of the iterations. However, as we complete additional iterations of assigning points to clusters and updating the centroid positions, we can see that this movement naturally causes centroids to migrate toward the denser clusters of points. This is especially evident when looking at the locations of centroids in the early portions of the K-Means iterative process. The first few iterations contain large movements followed by smaller movements as the K-Means algorithm closes in on a solution. This demonstrates a common trend in optimization, which is to make large adjustments first, then fine-tune to get closer to the answer.</p>
@@ -248,11 +249,12 @@
         
         <h3>6.1 Elbow Method</h3>
         <p>For each possible value of K, we run K-Means and collect J, the within-cluster sum of squares (inertia), calculated using Equation (1). As K increases, inertia always decreases; with more clusters, points are closer to their respective centroids. Eventually, however, improvements begin to diminish as more clusters are added.</p>
-        
-        <div class="figure-placeholder">
-            <strong>Insert Figure 5 here</strong><br>
-            (Use inertia vs K plot from Cell 6.)
+
+       <div class="figure-placeholder">
+            <img src="images/fig5.png" alt="Picture">
+            <caption>inertia vs K plot</caption><br>
         </div>
+        
         
         <p>In figure 5, inertia is initially steeply decreasing and then flattens out over time. The point on the plot where it "bends" or "elbows" is a reasonable selection for K, since it represents the best compromise between the complexity of the model and the quality of the fit.</p>
         
@@ -264,10 +266,10 @@
         </div>
         
         <p>The silhouette score varies from -1 to +1, where higher scores indicate data points are closer to their own cluster than to any one of the other clusters, whereas lower and negative silhouette scores indicate that misclassification is probable.</p>
-        
+
         <div class="figure-placeholder">
-            <strong>Insert Figure 6 here</strong><br>
-            (Use silhouette vs K plot from Cell 7.)
+            <img src="images/fig6.png" alt="Picture">
+            <caption> silhouette vs K plo</caption><br>
         </div>
         
         <p>Figure 6 shows that the maximum silhouette score occurs at the "optimal" K value that we will obtain by combining the elbow method and silhouette score analysis to obtain the optimum value for K.</p>
@@ -283,10 +285,10 @@
         </ol>
         
         <p>To illustrate these assumptions and examples of when they are not correct, K-Means was applied to the make_moons data set, which consists of two interlocking crescent moon shapes (see Figure 7).</p>
-        
+
         <div class="figure-placeholder">
-            <strong>Insert Figure 7 here</strong><br>
-            (K-Means Results on make_moons Data Set from Cell 8.)
+            <img src="images/fig7.png" alt="Picture">
+            <caption>K-Means Results on make_moons Data Set</caption><br>
         </div>
         
         <p>As seen in Figure 7, K-Means is attempting to "cut" between the two moons using a straight line. Therefore, many points are found outside of their cluster, even though the two clusters are visually identifiable by a human observer. In this case, the distance from the central point, the centroid, is a poor criterion for determining cluster membership.</p>
