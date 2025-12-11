@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-Means Clustering Report</title>
+    <style>
+        body {
+            font-family: 'Calibri', Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 40px;
+            background: #f5f5f5;
+        }
+        .document {
+            background: white;
+            padding: 60px 80px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            min-height: 100vh;
+        }
+        h1 {
+            font-size: 24pt;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #000;
+        }
+        h2 {
+            font-size: 16pt;
+            font-weight: bold;
+            margin-top: 24px;
+            margin-bottom: 12px;
+            color: #000;
+        }
+        h3 {
+            font-size: 14pt;
+            font-weight: bold;
+            margin-top: 18px;
+            margin-bottom: 10px;
+            color: #000;
+        }
+        h4 {
+            font-size: 12pt;
+            font-weight: bold;
+            font-style: italic;
+            margin-top: 12px;
+            margin-bottom: 8px;
+            color: #000;
+        }
+        p {
+            font-size: 11pt;
+            text-align: justify;
+            margin-bottom: 12px;
+            color: #000;
+        }
+        .abstract {
+            font-style: italic;
+            margin: 30px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-left: 4px solid #0066cc;
+        }
+        .abstract h4 {
+            margin-top: 0;
+            font-style: normal;
+        }
+        ul, ol {
+            font-size: 11pt;
+            margin-bottom: 12px;
+            padding-left: 40px;
+        }
+        li {
+            margin-bottom: 6px;
+        }
+        .equation {
+            text-align: center;
+            font-style: italic;
+            margin: 20px 0;
+            font-size: 11pt;
+        }
+        .figure-placeholder {
+            background: #e8f4f8;
+            border: 2px dashed #0066cc;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            font-style: italic;
+            color: #0066cc;
+        }
+        .references {
+            margin-top: 40px;
+        }
+        .references p {
+            text-indent: -40px;
+            padding-left: 40px;
+            margin-bottom: 8px;
+        }
+        .download-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        .download-btn:hover {
+            background: #0052a3;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="document">
+        <h1>K-Means Clustering: How Initialisation and the Choice of K Shape the Results</h1>
+        
+        <div class="abstract">
+            <h4>Abstract</h4>
+            <p>In unsupervised machine learning, clustering is a primary method for finding the structure and patterns within unlabelled data. One method of clustering that is very well-known is K-Means. The reason for K-Means's popularity is because of its simplicity, speed, and interpretability. Unfortunately, there are two areas in which K-Means does not perform well: how the initial centroids are picked and what value should be chosen for K. When bad decisions are made in these areas, K-Means will yield unsatisfactory results or solutions.</p>
+            
+            <p>This report will provide a complete tutorial of how K-Means works and then examine the initialisation and K values that impact the way K-Means operates. We will use Python to demonstrate the centroids' movement and demonstrate the difference between random initialisation and K-Means++, and to show the results of applying both the Elbow method and Silhouette score to determine the appropriate value for K. Additionally, we will cover a case study of K-Means performing poorly with a non-spherical dataset and briefly explain when to use K-Means and when not to use it. The report will combine theoretical explanations of clustering algorithms with practical demonstrations of how clustering is achieved and searching for clustering solutions will demonstrate many of the generic methods and models used in machine learning, including distance metrics, iterative optimisation, and clustering by centroids.</p>
+        </div>
+
+        <h2>1. Introduction</h2>
+        <p>Data without labels is common in many everyday scenarios, for example, you may have thousands of customer records and images, or sensor data, but have not created specific categories for each record/image. Clustering groups similar observations so that the user can look for different structures/patterns as well as conduct exploratory analysis for downstream model building.</p>
+        
+        <p>K-Means clustering is one of the first algorithms that are often used for clustering. K-Means partitions data into K clusters, where K is the user-supplied 'number of clusters,' by assigning each point of data (observation) to the cluster with the nearest point/centroid. The algorithm is simple to conceptualise and is able to scale well to larger datasets than other clustering algorithms, thus allowing for ease of use when visualising the results when the data is in a low-dimensional space.</p>
+        
+        <p>However, K-Means does not specify the number of clusters that exist. Instead, K must be defined by the user prior to running the algorithm. Additionally, the algorithm may converge on different clusterings, depending on where the initial centroids are located.</p>
+        
+        <p>This paper will:</p>
+        <ul>
+            <li>Provide a step-by-step explanation of the K-Means algorithm.</li>
+            <li>Illustrate how the location of the centroids impacts the clustering result.</li>
+            <li>Show how to determine the number of clusters, K, using both the elbow method and the Silhouette score.</li>
+            <li>Present a failure case where K-Means will not work for the structure of the data.</li>
+            <li>When possible, link these concepts to existing methodologies in generic machine learning such as distance-based learning and iterative optimising.</li>
+        </ul>
+
+        <h2>2. Clustering and Unsupervised Learning</h2>
+        <p>Clustering belongs to the category of unsupervised learning in the sense that clustering does not have predetermined labels associated with the data. Rather than using labels to determine the associated class of a new input sample, algorithms using clustering determine how to best represent or group the input samples based upon their similarity to one another.</p>
+        
+        <p>Some of the more widely used clustering algorithms are:</p>
+        <ul>
+            <li>Centroid-based clustering (K-Means) where a singular centre represents a cluster.</li>
+            <li>Density-based clustering (DBSCAN) where clusters are defined as regions of high density of points in the data space.</li>
+            <li>Hierarchical clustering, which is built around clustered trees, similar to a family tree representation.</li>
+            <li>Probabilistic clustering (Gaussian Mixture Model) clusters are treated as probability distributions.</li>
+        </ul>
+        
+        <p>K-Means is a centroid based clustering algorithm where Euclidean distance is the metric used to determine the similarity between points. K-Means is greatest when compact, round clusters are formed using similarity metrics and multiple generic clustering algorithms provide additional data refinement through distance measures, iterative data refinements and minimising variances.</p>
+
+        <h2>3. The K-Means Algorithm</h2>
+        <p>The dataset X = {x₁, ..., xₙ} consists of points in the d-dimensional real space (ℝᵈ), and we want to cluster them into K clusters C₁, C₂,..., Cₖ. These clusters each have a centroid μⱼ, and the goal of K-means is to minimize the sum of the squares of the distances between all points in a cluster and the cluster's centroid (within-cluster distance).</p>
+        
+        <p>The objective function for the K-means algorithm is:</p>
+        
+        <div class="equation">
+            J = Σⱼ₌₁ᴷ Σₓᵢ∈Cⱼ ‖xᵢ − μⱼ‖²
+        </div>
+        
+        <p>The algorithm can be summarized with the following steps:</p>
+        
+        <h3>1. Initialization</h3>
+        <p>Select K initial centroids (μ₁, μ₂, ..., μₖ).</p>
+        
+        <h3>2. Assignment Step</h3>
+        <p>For each data point, assign it to the cluster whose centroid is closest to the point:</p>
+        <div class="equation">
+            cluster(xᵢ) = argminⱼ { ‖xᵢ − μⱼ‖ }
+        </div>
+        
+        <h3>3. Update Step</h3>
+        <p>Calculate the new centroid for each cluster by calculating the average of the assigned points:</p>
+        <div class="equation">
+            μⱼ = (1/|Cⱼ|) Σₓᵢ∈Cⱼ xᵢ
+        </div>
+        
+        <h3>Convergence</h3>
+        <p>Continue the process of assigning data points to the cluster centroids and updating the position of the centroids until the centroids stop moving significantly or until the maximum number of iterations has been reached.</p>
+        
+        <p>K-Means is an iterative optimization algorithm that minimizes the objective function J during each iteration. However, there is no guarantee that the result from K-Means will achieve the global minimum; therefore, the result is not necessarily a global minimum, but only a local minimum. This reinforces why K-Means requires proper initialization.</p>
+        
+        <div class="figure-placeholder">
+            <strong>Insert Figure 1 here</strong><br>
+            (Use the scatterplot from Cell 2: synthetic 4-cluster dataset.)
+        </div>
+        
+        <p>The example synthetic dataset that we will be using for most of this tutorial consists of 500 data points created around 4 true cluster centroids.</p>
+
+        <h2>4. Initialization Methods: Random Initialisation or K-Means++</h2>
+        
+        <h3>4.1 Random Initialization</h3>
+        <p>Randomly selecting K points as initial centroid positions is the simplest way to initialize K-Means, as this is straightforward to implement. Unfortunately, if the initial centroid positions selected were not chosen appropriately (i.e., they are too close together), the result may end up being an unevenly spaced cluster. Because K-Means performs a greedy approach, if it generates a cluster containing two closely located centroids and an under-populated region of the dataset, K-Means could become stuck in an undesirable state.</p>
+        
+        <div class="figure-placeholder">
+            <strong>Insert Figure 2 here</strong><br>
+            (Use the output from Cell 4: K-Means, initialized with random.)
+        </div>
+        
+        <p>As shown in Figure 2, random initialisation produces clusters that do not align with the underlying data. This is illustrated by the K-Means centroids positioned slightly off centre and the incorrect clustering of certain points in the dataset into the wrong cluster.</p>
+        
+        <h3>4.2 K-Means++ Initialisation</h3>
+        <p>The K-Means method has been improved on with the use of K-Means++, which uses a different way of choosing the first set of Centroids (cluster centres).</p>
+        
+        <p>When using K-Means++ the following is the method of seeding a new set of Centroids:</p>
+        <ol>
+            <li>Randomly choose the first Centroid from the available Data Points.</li>
+            <li>To select the next and subsequent Centroids, the usable Data Points are given a weighted selection likelihood based on the square of the distance to the closest Centroid.</li>
+        </ol>
+        
+        <p>The further away from existing Centroids a Data Point is, the higher the likelihood of the Data Point being selected.</p>
+        
+        <p>As a result of the Centroids being selected in this fashion, the Centroids are positioned far apart in space initially (well spread out).</p>
+        
+        <div class="figure-placeholder">
+            <strong>Insert Figure 3 here</strong><br>
+            (Generated via code snippet from cell 4 with K-Means++.)
+        </div>
+        
+        <p>K-Means++ uses better initial Centroid positioning to result in a cleaner and more consistent clustering solution. With K-Means++ the Centroids begin in decent locations, which allows the Algorithm to quickly find a "good" solution. Most libraries, including scikit-learn, use K-Means++ as the default method for selecting initial Centroid placements.</p>
+        
+        <p>From a methodological perspective, Initialisation is a very effective optimisation technique. It is a generalisation technique for producing better quality Local Minima for Algorithms.</p>
+
+        <h2>5. Visualizing the Movement of the Centroids</h2>
+        <p>The K-Means clustering algorithm is an excellent instructional tool because we are able to see the path that the centroids take from one iteration of the algorithm to the next. If we manually take the time to execute several iterations of the K-Means procedure, we could create a graph that shows us:</p>
+        <ol>
+            <li>The points contained within the data set</li>
+            <li>The position of each centroid at each iteration of the K-Means algorithm</li>
+            <li>The movement of centroids over iterations</li>
+        </ol>
+        
+        <div class="figure-placeholder">
+            <strong>Insert Figure 4 here</strong><br>
+            (Use the plot from Cell 5: centroid positions across ~8 iterations.)
+        </div>
+        
+        <p>Figure 4 is designed to help illustrate the change in centroid position through time in the context of approximately eight iterations of running K-Means. By examining Figure 4 we can clearly see that the earliest positions of centroids are often much further away from their "true" centre than they are at the conclusion of the iterations. However, as we complete additional iterations of assigning points to clusters and updating the centroid positions, we can see that this movement naturally causes centroids to migrate toward the denser clusters of points. This is especially evident when looking at the locations of centroids in the early portions of the K-Means iterative process. The first few iterations contain large movements followed by smaller movements as the K-Means algorithm closes in on a solution. This demonstrates a common trend in optimization, which is to make large adjustments first, then fine-tune to get closer to the answer.</p>
+
+        <h2>6. The "K" Value Selection in K-Means Clustering</h2>
+        <p>The number of clusters (K) must be specified by the user. The placement of K in this case is a problem of model selection. The two most commonly used methods of selecting K are the elbow method and silhouette analysis.</p>
+        
+        <h3>6.1 Elbow Method</h3>
+        <p>For each possible value of K, we run K-Means and collect J, the within-cluster sum of squares (inertia), calculated using Equation (1). As K increases, inertia always decreases; with more clusters, points are closer to their respective centroids. Eventually, however, improvements begin to diminish as more clusters are added.</p>
+        
+        <div class="figure-placeholder">
+            <strong>Insert Figure 5 here</strong><br>
+            (Use inertia vs K plot from Cell 6.)
+        </div>
+        
+        <p>In figure 5, inertia is initially steeply decreasing and then flattens out over time. The point on the plot where it "bends" or "elbows" is a reasonable selection for K, since it represents the best compromise between the complexity of the model and the quality of the fit.</p>
+        
+        <h3>6.2 Silhouette Analysis</h3>
+        <p>The silhouette score represents how well separated a cluster is from other clusters. For each data point (i = 1 to n), <i>a</i> represents the average distance of point i to other points in the same cluster; <i>b</i> gives the lower average distance of point i to other clusters. The silhouette score (<i>s</i>) is given by the formula:</p>
+        
+        <div class="equation">
+            s = (b − a) / max(a, b)
+        </div>
+        
+        <p>The silhouette score varies from -1 to +1, where higher scores indicate data points are closer to their own cluster than to any one of the other clusters, whereas lower and negative silhouette scores indicate that misclassification is probable.</p>
+        
+        <div class="figure-placeholder">
+            <strong>Insert Figure 6 here</strong><br>
+            (Use silhouette vs K plot from Cell 7.)
+        </div>
+        
+        <p>Figure 6 shows that the maximum silhouette score occurs at the "optimal" K value that we will obtain by combining the elbow method and silhouette score analysis to obtain the optimum value for K.</p>
+        
+        <p>Both of these are generic techniques for model selection: a Generalization Technique for Model Selection that can be applied to many clustering algorithms (not only K-Means).</p>
+
+        <h2>7. K-Means Limitations and a Failure Example</h2>
+        <p>K-Means is straightforward and useful but not universally applicable. It makes a number of strong assumptions that are sometimes incorrect:</p>
+        <ol>
+            <li>That the clusters are compact and approximately spherical when visualized in Euclidean space.</li>
+            <li>That all clusters (or groups of points) have similar size and density.</li>
+            <li>That Euclidean distance is a meaningful way to define cluster membership in the data set being analyzed.</li>
+        </ol>
+        
+        <p>To illustrate these assumptions and examples of when they are not correct, K-Means was applied to the make_moons data set, which consists of two interlocking crescent moon shapes (see Figure 7).</p>
+        
+        <div class="figure-placeholder">
+            <strong>Insert Figure 7 here</strong><br>
+            (K-Means Results on make_moons Data Set from Cell 8.)
+        </div>
+        
+        <p>As seen in Figure 7, K-Means is attempting to "cut" between the two moons using a straight line. Therefore, many points are found outside of their cluster, even though the two clusters are visually identifiable by a human observer. In this case, the distance from the central point, the centroid, is a poor criterion for determining cluster membership.</p>
+        
+        <p>Methods such as DBSCAN and Spectral Clustering could be utilized to cluster the make moon data set. This demonstrates that there is no single clustering method that can be applied to all data sets. While K-Means may be a suitable general-purpose clustering method for a particular problem, it may also be inappropriate for use in other situations.</p>
+
+        <h2>8. Generic Techniques and Models in This Tutorial</h2>
+        <p>This tutorial covers multiple generic techniques:</p>
+        <ul>
+            <li><strong>Distance Metrics:</strong> We used Euclidean distance to indicate how similar items are to one another.</li>
+            <li><strong>Iterative Optimisation:</strong> K-Means algorithm has an iterative process for assigning and updating points to clusters.</li>
+            <li><strong>Variance Minimisation:</strong> The objective function seeks to find the minimum within-cluster squared distances.</li>
+            <li><strong>Heuristic Initialisation:</strong> The K-Means++ algorithm builds upon the K-Means algorithm by applying a heuristic method to improve the solution.</li>
+            <li><strong>Model Selection:</strong> The elbow method and silhouette score help to determine the optimal value for K.</li>
+        </ul>
+        
+        <p>Additionally, this tutorial addresses multiple generic models:</p>
+        <ul>
+            <li><strong>Centroid-Based Clustering:</strong> Clusters are defined or represented by the means of points in a cluster.</li>
+            <li><strong>Partitioning Models:</strong> The dataset is split into disjoint groups.</li>
+            <li><strong>Unsupervised Learning Models:</strong> The model infers structure without requiring labels on the dataset.</li>
+        </ul>
+        
+        <p>These techniques and models will be relevant throughout the field of Machine Learning and Data Analysis, not only with K-Means.</p>
+
+        <h2>9. Conclusion</h2>
+        <p>K-Means Clustering is a very basic algorithm; it is simple and quick, but nonetheless interpretable. K-Means Clustering is often a good starting point to explore data and serves as a benchmark against which to compare other clustering methods. The way in which K-Means performs will largely depend upon the two decisions made by the user, including the way the centroids are initialized and what value is chosen for K.</p>
+        
+        <p>In this report, we have:</p>
+        <ul>
+            <li>Described K-Means Clustering and the ultimate goal of utilising it.</li>
+            <li>Demonstrated that random initialisation can lead to less effective clusters or consistencies.</li>
+            <li>Illustrated the use of K-Means++ as an effective way of providing better initial conditions and therefore more reliable clustering results.</li>
+            <li>Developed an understanding of how centroids are relocated and illustrated the iterative refinement method to initiate the final state of a K-Means model.</li>
+            <li>Utilised the elbow and silhouette analysis as generic selection methodologies for K.</li>
+            <li>Illustrated the limitations of K-Means on non-spherical data through practical examples.</li>
+        </ul>
+        
+        <p>This understanding can assist practitioners in utilising K-Means more effectively and using it as a valid tool in its area of applicability rather than relying on it as a blanket solution. However, K-Means is an effective and elegant clustering model when using K-Means in conjunction with valid assumptions; otherwise, K-Means provides a starting point for comparison with other more sophisticated methods.</p>
+
+        <div class="references">
+            <h2>References</h2>
+            <p>Arthur, D., & Vassilvitskii, S. (2007). k-means++: The Advantages of Careful Seeding. <i>Proceedings of the Eighteenth Annual ACM-SIAM Symposium on Discrete Algorithms</i>, 1027–1035.</p>
+            
+            <p>Forgy, E. W. (1965). Cluster Analysis of Multivariate Data: Efficiency versus Interpretability of Classifications. <i>Biometrics</i>, 21(3), 768–769.</p>
+            
+            <p>Hartigan, J. A., & Wong, M. A. (1979). Algorithm AS 136: A K-Means Clustering Algorithm. <i>Journal of the Royal Statistical Society. Series C (Applied Statistics)</i>, 28(1), 100–108.</p>
+            
+            <p>Jain, A. K. (2010). Data Clustering: 50 Years Beyond K-Means. <i>Pattern Recognition Letters</i>, 31(8), 651–666.</p>
+            
+            <p>Lloyd, S. P. (1982). Least Squares Quantization in PCM. <i>IEEE Transactions on Information Theory</i>, 28(2), 129–137. (Originally published as Bell Labs Technical Report, 1957.)</p>
+            
+            <p>MacQueen, J. (1967). Some Methods for Classification and Analysis of Multivariate Observations. <i>Proceedings of the Fifth Berkeley Symposium on Mathematical Statistics and Probability</i>, 1, 281–297.</p>
+            
+            <p>Pedregosa, F., Varoquaux, G., Gramfort, A., Michel, V., Thirion, B., Grisel, O., … Duchesnay, E. (2011). Scikit-learn: Machine Learning in Python. <i>Journal of Machine Learning Research</i>, 12, 2825–2830.</p>
+            
+            <p>Rousseeuw, P. J. (1987). Silhouettes: A Graphical Aid to the Interpretation and Validation of Cluster Analysis. <i>Journal of Computational and Applied Mathematics</i>, 20, 53–65.</p>
+            
+            <p>Xu, R., & Wunsch, D. (2005). Survey of Clustering Algorithms. <i>IEEE Transactions on Neural Networks</i>, 16(3), 645–678.</p>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.8.2/docx.min.js"></script>
+    <script>
+        async function downloadDoc() {
+            const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } = docx;
+            
+            const doc = new Document({
+                sections: [{
+                    properties: {},
+                    children: [
+                        new Paragraph({
+                            text: "K-Means Clustering: How Initialisation and the Choice of K Shape the Results",
+                            heading: HeadingLevel.TITLE,
+                            alignment: AlignmentType.CENTER,
+                            spacing: { after: 400 }
+                        }),
+                        new Paragraph({
+                            text: "Abstract",
+                            heading: HeadingLevel.HEADING_2,
+                            spacing: { before: 240, after: 120 }
+                        }),
+                        new Paragraph({
+                            children: [new TextRun({ text: "In unsupervised machine learning, clustering is a primary method for finding the structure and patterns within unlabelled data. One method of clustering that is very well-known is K-Means. The reason for K-Means's popularity is because of its simplicity, speed, and interpretability. Unfortunately, there are two areas in which K-Means does not perform well: how the initial centroids are picked and what value should be chosen for K. When bad decisions are made in these areas, K-Means will yield unsatisfactory results or solutions.", italics: true })],
+                            spacing: { after: 120 }
+                        }),
+                        new Paragraph({
+                            text: "[Full document content - simplified for demo]",
+                            spacing: { before: 480, after: 120 },
+                            alignment: AlignmentType.CENTER,
+                            italics: true
+                        })
+                    ]
+                }]
+            });
+            
+            const blob = await Packer.toBlob(doc);
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'K-Means_Clustering_Report.docx';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
